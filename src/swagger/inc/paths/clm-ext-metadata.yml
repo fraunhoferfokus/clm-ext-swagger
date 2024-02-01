@@ -1,0 +1,86 @@
+"/objectMetadata":
+  get:
+    summary: >-
+      Get all metadata
+    tags:
+      - pblc
+    parameters:
+      - name: x-access-token
+        in: header
+        description: The access token
+        required: true
+        example: exampleAccessToken
+        schema:
+          type: string
+      - name: providerId
+        in: query
+        description: ProviderId for client-side routing control
+        example: providerId
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Object metadata type
+        schema:
+          type: string
+          enum:
+            - LOM
+          default: LOM
+
+    responses:
+      "200":
+        description: OK
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "500":
+        description: "Internal server error"
+
+"/objectMetadata/{objectMetadataId}":
+  get:
+    summary: >-
+      Reads an existing object metadata by objectMetadataId (Not available
+      yet)
+    tags:
+      - pblc
+    parameters:
+      - name: x-access-token
+        in: header
+        description: The access token
+        required: true
+        example: exampleAccessToken
+        schema:
+          type: string
+      - name: providerId
+        in: query
+        description: ProviderId for client-side routing control
+        example: providerId
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Object metadata type
+        schema:
+          type: string
+          enum:
+            - LOM
+          default: LOM
+      - name: objectMetadataId
+        in: path
+        description: ObjectMetadataId of object metadata
+        required: true
+        example: objectMetadataId
+        schema:
+          type: string
+    responses:
+      "200":
+        description: OK
+      "404":
+        description: "Metadata does not exist"
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "500":
+        description: "Internal server error"

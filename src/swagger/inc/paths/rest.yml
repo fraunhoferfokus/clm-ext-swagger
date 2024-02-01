@@ -1,0 +1,91 @@
+/adaptiveCourses/{userId}:
+  get:
+    summary: Read adaptive course (Not available)
+    description: Return an adaptive course based on the progress of the learner
+    tags:
+      - pblc
+    parameters:
+      - name: x-access-token
+        in: header
+        description: The access token
+        required: true
+        example: exampleAccessToken
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: The userId of the token owner
+        required: true
+        example: fame@fokus.fraunhofer.de
+        schema:
+          type: string
+    responses:
+      "200":
+        description: >-
+          Successful operation, The course-structure of that TP is shown in
+          XML. 'Example Value' has problems rendering xml data, please get
+          data from the route for a real example
+        content:
+          application/json:
+            schema:
+              properties:
+                V2/courseStructure:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/v2courseStructure"
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "500":
+        description: "Internal server error"
+
+/esco/skills/{skillId}:
+  get:
+    summary: >-
+      Get all metadata
+    tags:
+      - pblc
+    parameters:
+      - name: skillId
+        in: path
+        description: Id of esco skill
+        schema:
+          type: string
+          example: 16a3d876-e330-4648-b03f-5f8d7e18ee17
+    responses:
+      "200":
+        description: OK
+      "404":
+        description: "Skill does not exist"
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "500":
+        description: "Internal server error"
+
+/esco/occupations/{occupationId}:
+  get:
+    summary: >-
+      Get all metadata
+    tags:
+      - pblc
+    parameters:
+      - name: occupationId
+        in: path
+        description: Id of esco occupation
+        schema:
+          type: string
+          example: fb3f5f35-e6f7-4168-aef2-e4dfb7f2a3ee
+    responses:
+      "200":
+        description: OK
+      "404":
+        description: "Occupation does not exist"
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "500":
+        description: "Internal server error"

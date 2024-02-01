@@ -1,0 +1,318 @@
+securitySchemes:
+  bearerAuth:
+    type: http
+    scheme: bearer
+  refreshToken:
+    type: apiKey
+    in: header
+    name: x-refresh-token
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-API-KEY
+schemas:
+  AuthResponse:
+    type: object
+    description: >-
+      Contains a registration tokenID that allows the user to authenticate to
+      the Middleware, an array of Enrollment objects, an array of
+      ContentTitles associated to the courses, an array of ContentStructure
+      objects and an array of Tool Ids.
+    properties:
+      access-token:
+        type: string
+      refresh-token:
+        type: string
+    xml:
+      name: AuthResponse
+  ContentStructure:
+    type: object
+    description: ""
+    properties:
+      value:
+        type: string
+    xml:
+      name: ContentStructure
+  access-token:
+    type: string
+    description: access token for API requests to routes protected by the UEDB
+    example: >-
+      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbnJvbGxtZW50cyI6W10sImlzcyI6ImFkbWluIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNTY1OTYzNDkwLCJleHAiOjE1NjU5NzA2OTB9.jC87F2CDN7MnA17x3W0rkNSOS4VUfS9VXPzmQdIdcbI
+  refresh-token:
+    type: string
+    description: refresh token for getting a new access token
+    example: >-
+      eyJhbGciOiJIUzI1NiIsInR5cCI6CJ9.eyJl50cyI6W10sImlzcyI6ImFkbWluIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNTY1OTYzNDkwLCJleHAiOjE1NjU5NzA2OTB9.jC87F2CDN7MnA17x3W0rkNSOS4VUfS9VXPzmQdIdcbI
+  UserObject:
+    type: object
+    description: ""
+    properties:
+      name:
+        type: string
+        description: firstname + middlenames
+        example: Peter
+      familyName:
+        type: string
+        description: family name
+        example: Lustig
+      givenName:
+        type: string
+        description: >-
+          The given name of the user
+        example: Hello
+      email:
+        type: string
+        description: >-
+          the email (which has to be unique). Optionaly can used to
+          authenticate in the system
+        example: fame@fokus.fraunhofer.de
+      
+  UserObjectRegister:
+    type: object
+    description: ""
+    properties:
+      name:
+        type: string
+        description: firstname + middlenames
+        example: Peter
+      familyName:
+        type: string
+        description: family name
+        example: Lustig
+      username:
+        type: string
+        description: >-
+          the username (which has to be unique) to identify the user in the
+          system
+        example: Hello1
+      email:
+        type: string
+        description: >-
+          the email (which has to be unique). Optionaly can used to
+          authenticate in the system
+        example: fame@fokus.fraunhofer.de
+      password:
+        type: string
+        description: Password you want to give
+        example: World1
+      confirmPassword:
+        type: string
+        description: Confirm Password has to match with password!
+        example: World1
+  LTI13ConsumerCredentials:
+    type: object
+    description: The response after the login was succesfull
+    properties:
+      _id:
+        description: ""
+        type: string
+        example: c51c416a62b8e8d6f2964c9451000b2b
+      _rev:
+        description: ""
+        type: string
+        example: 1-14eed9af7442063963a52d526e94754e
+      client_id:
+        description: ""
+        type: string
+        example: "1000000000001"
+      key_set_url:
+        example: "02-1-2020 08:07:59"
+        description: ""
+        type: string
+      auth_token_url:
+        example: "https://platform.example.edu/.well-known/jwks.json"
+        description: ""
+        type: string
+      issuer:
+        example: example.comqweqwewewqewq
+        description: ""
+        type: string
+  LoginResponse:
+    type: object
+    description: The response after the login was succesfull
+    properties:
+      accessToken:
+        $ref: "#/components/schemas/access-token"
+      refreshToken:
+        $ref: "#/components/schemas/refresh-token"
+      accessTokenExpiresIn:
+        description: The expiration date of the access token (1 hour)
+        type: string
+        example: "02-1-2020 06:07:59"
+      refreshTokenExpiresIn:
+        example: "02-1-2020 08:07:59"
+        description: The expiration date of the refresh token (3 days)
+        type: string
+  v2courseStructure:
+    type: object
+    description: The course-structure of a tool provider
+    properties:
+      organisations:
+        type: object
+        description: root element. Contains courses
+        properties:
+          item:
+            type: object
+            description: >-
+              Each item describes a learning unit. It either has a tool or
+              another item
+            properties:
+              title:
+                type: string
+                description: Title of the learning unit. Every 'item' must have a title
+                example: <title>Einführung</title>
+              tool:
+                type: string
+                description: >-
+                  contains id as xml-attribute which points to a tool in
+                  resources
+                example: <tool identifier='fb763566-4c90-412f-a3e6-bd5ae776d960'/>
+      resources:
+        type: object
+        description: Here are all the tool informations.
+        properties:
+          resource:
+            type: object
+            description: >-
+              represents information of a single tool. Identifier from tool
+              points here and is a xml-attribute
+            properties:
+              toolId:
+                description: the tool Id of the provider
+                example: "12345"
+                type: string
+              providerId:
+                description: the provider which offer the tool-content!
+                example: toolprovider-edx
+                type: string
+              target:
+                description: describes how to open the tool
+                example: iframe
+                type: string
+  v2Tools:
+    type: object
+    description: All Tools. (Available)
+    properties:
+      providerId:
+        type: string
+        description: providerId
+        example: FOKUS-Akademie
+      tools:
+        type: array
+        description: Contains list of tools
+        items:
+          $ref: "#/components/schemas/tools"
+      rootUrl:
+        type: string
+        description: >-
+          Is a URL that consists of 2 parts. First is the rootUrl, second is
+          the toolID. Both parts together make complete url which points to
+          the tool.
+        example: "http://www.youtube.com"
+      directLaunch:
+        type: boolean
+        description: Way how the tool will be launched.
+        example: "true"
+  v2Tool:
+    type: object
+    description: All tools from single Provider. (Available)
+    properties:
+      providerId:
+        type: string
+        description: providerId
+        example: FOKUS-Akademie
+      tools:
+        type: array
+        description: Contains list of tools
+        items:
+          $ref: "#/components/schemas/tools"
+      rootUrl:
+        type: string
+        description: >-
+          Is a URL that consists of 2 parts. First is the rootUrl, second is
+          the toolID. Both parts together make complete url which points to
+          the tool.
+        example: "http://www.youtube.com"
+      directLaunch:
+        type: boolean
+        description: Way how the tool will be launched.
+        example: "true"
+  v2ToolsPatch:
+    type: object
+    description: All Tools. (Available)
+    properties:
+      rootUrl:
+        type: string
+        description: >-
+          Is a URL that consists of 2 parts. First is the rootUrl, second is
+          the toolID. Both parts together make complete url which points to
+          the tool.
+        example: "http://www.youtube.com"
+      directLaunch:
+        type: boolean
+        description: Way how the tool will be launched.
+        example: "true"
+      providerKey:
+        type: string
+        description: LTI-spec needed to start tool
+        example: "12345"
+      providerSecret:
+        type: string
+        description: LTI-spec needed to start tool
+        example: "12345"
+  v2ToolsPost:
+    type: object
+    description: All Tools. (Available)
+    properties:
+      providerId:
+        type: string
+        description: providerId
+        example: FOKUS-Akademie
+      tools:
+        type: array
+        description: Contains list of tools
+        items:
+          $ref: "#/components/schemas/tools"
+      rootUrl:
+        type: string
+        description: >-
+          Is a URL that consists of 2 parts. First is the rootUrl, second is
+          the toolID. Both parts together make complete url which points to
+          the tool.
+        example: "http://www.youtube.com"
+      directLaunch:
+        type: boolean
+        description: Way how the tool will be launched.
+        example: "true"
+      providerKey:
+        type: string
+        description: LTI-spec needed to start tool
+        example: "12345"
+      providerSecret:
+        type: string
+        description: LTI-spec needed to start tool
+        example: "12345"
+  changeableProviderProps:
+    type: object
+    description: Changeable tools of Provider.
+    properties:
+      providerId:
+        type: string
+        description: providerId
+        example: FOKUS-Akademie
+      tools:
+        type: array
+        description: Contains list of tools
+        items:
+          $ref: "#/components/schemas/tools"
+      rootUrl:
+        type: string
+        description: >-
+          Is a URL that consists of 2 parts. First is the rootUrl, second is
+          the toolID. Both parts together make complete url which points to
+          the tool.
+        example: "http://www.youtube.com"
+      directLaunch:
+        type: boolean
+        description: Way how the tool will be launched.
+        example: "true"

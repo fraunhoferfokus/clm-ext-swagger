@@ -1,0 +1,16 @@
+openapi: 3.0.0
+info:
+  version: 3.0.0
+  title: Middleware API
+  description: Common Learning Middleware (CLM)
+servers:
+  - url: 'http://tripleadapt.fokus.fraunhofer.de:8010'
+tags:
+  - name: pblc
+    description: Routes for public access
+  - name: mgmt
+    description: Routes only available for management purposes
+  - name: lgcy
+    description: Routes which will be deprecated soon
+security:
+  - bearerAuth: []

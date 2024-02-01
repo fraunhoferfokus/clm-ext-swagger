@@ -1,0 +1,45 @@
+/launchableObjects/users/{userId}/courses:
+      get:
+        summary: Returns Course-Structure of a logged in user
+        description: >-
+          Get's the course structure of a tool-provider in XML-Common-Cartridge.
+          Currently Swagger has problems displaying XML-Examples. Get the real
+          example from the endpoint please.
+        tags:
+          - pblc
+        parameters:
+          - name: x-access-token
+            in: header
+            description: The access token
+            required: true
+            example: exampleAccessToken
+            schema:
+              type: string
+          - in: path
+            name: userId
+            description: userId of the user
+            example: userId
+            required: true
+        responses:
+          '200':
+            description: >-
+              Successful operation, The course-structure of that TP is shown in
+              XML. 'Example Value' has problems rendering xml data, please get
+              data from the route for a real example
+            content:
+              application/json:
+                schema:
+                  properties:
+                    V2/courseStructure:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/v2courseStructure'
+          "404":
+            description: 'User does not exist'
+          "401":
+            description: "API-Token/JWT unauthorized"
+          "403":
+            description: "API-Token/JWT not sufficient permissions"
+          "500":
+            description: "Internal server error"
+    

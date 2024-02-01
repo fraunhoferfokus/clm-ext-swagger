@@ -1,0 +1,423 @@
+/core/users:
+  post:
+    tags:
+      - pblc
+    summary: Creates a new user
+    description: >-
+      Triggered by the LMS that sends the registration data provided by the
+      user.
+    operationId: registerUser
+    parameters: []
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserObjectRegister"
+    responses:
+      "200":
+        content:
+          application/json:
+            schema:
+              properties:
+                message:
+                  description: Succesful registration check your email!
+                  example: Succesful registration check your email!
+      "400":
+        description: "Validation error in JSON body"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "401":
+        description: "API-Token unauthorized"
+      "500":
+        description: "Internal server error"
+/core/users/{userId}/resetPassword:
+  post:
+    tags:
+      - pblc
+    summary: Send an email to the user with reset instructions
+    description: ""
+    operationId: resetPassword
+    requestBody:
+      content:
+        application/json:
+          schema:
+            properties:
+              email:
+                type: string
+                example: fame@fokus.fraunhofer.de
+    responses:
+      "200":
+        description: "Succesfull Operation, giving the user as response"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Sent reset instructions to the user if exists
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "404":
+        description: "User not found"
+      "500":
+        description: "Internal server error"
+/core/users/{userId}:
+  get:
+    tags:
+      - pblc
+    summary: Gets the user by access-token
+    description: ""
+    operationId: getUserByAccessToken
+    parameters:
+      - in: path
+        name: userId
+        description: userId of the user
+        example: userId
+        required: true
+      - in: header
+        name: x-access-token
+        description: user-specific token which you get when you login
+        example: x-access-token
+        required: true
+    responses:
+      "200":
+        description: "Succesfull Operation, giving the user as response"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserObject"
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "404":
+        description: "User not found"
+      "500":
+        description: "Internal server error"
+  patch:
+    tags:
+      - pblc
+    summary: Patches certain attributes of the user
+    description: Currently only support the fields name and family name
+    operationId: patchUserByAccessToken
+    parameters:
+      - in: path
+        name: userId
+        description: userId of the user
+        example: userId
+        required: true
+      - in: header
+        name: x-access-token
+        description: user-specific token which you get when you login
+        example: x-access-token
+        required: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: hello
+    responses:
+      "200":
+        description: "Succesfull Operation, giving the user as response"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserObject"
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "404":
+        description: "User not found"
+      "500":
+        description: "Internal server error"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/404UserNotFound"
+  put:
+    tags:
+      - pblc
+    summary: Updates the user
+    description: Currently only support the fields name and family name
+    operationId: putUserByAccessToken
+    parameters:
+      - in: path
+        name: userId
+        description: userId of the user
+        example: userId
+        required: true
+      - in: header
+        name: x-access-token
+        description: user-specific token which you get when you login
+        example: x-access-token
+        required: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: hello
+              familyName:
+                type: string
+                example: world
+    responses:
+      "200":
+        description: "Succesfull Operation, giving the user as response"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserObject"
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "404":
+        description: "User not found"
+      "500":
+        description: "Internal server error"
+  delete:
+    tags:
+      - pblc
+    summary: "Deletes a certain user  "
+    description: ""
+    operationId: deleteUserByAccessToken
+    parameters:
+      - in: path
+        name: userId
+        description: userId of the user
+        example: userId
+        required: true
+      - in: header
+        name: x-access-token
+        description: user-specific token which you get when you login
+        example: x-access-token
+        required: true
+    responses:
+      "204":
+        description: Successfull operation. No content
+        content: {}
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "404":
+        description: "User not found"
+      "500":
+        description: "Internal server error"
+/core/authentication:
+  post:
+    tags:
+      - pblc
+    summary: Checks the credentials of a user and let's that user login to the LMS.
+    description: >-
+      Triggered by the LMS that sends the users given credentials to check if
+      they are valid.
+    operationId: loginUser
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                description: abbreviation of your account
+                example: fame@fokus.fraunhofer.de
+              password:
+                type: string
+                description: password of your account
+                example: 12345
+    responses:
+      "200":
+        description: >-
+          Succesfull operation. Authentication und login of user was
+          successful.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginResponse"
+      "400": 
+        description: "Bad credentials"
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "500":
+        description: "Internal server error"
+/core/authentication/refresh:
+  get:
+    tags:
+      - pblc
+    summary: Gets a new access token.
+    parameters: []
+    responses:
+      "200":
+        description: Successful operation. Response consists of a new access token.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessToken:
+                  $ref: "#/components/schemas/access-token"
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "400":
+        description: "Bad token"
+      "500":
+        description: "Internal server error"
+    security:
+      - refreshToken: []
+      - bearerAuth: []
+/core/authentication/ldap:
+  post:
+    tags:
+      - pblc
+    summary: >-
+      Checks the credentils of a user for a LDAP directory registered in the
+      UEDB to let the user login to the LMS
+    description: >-
+      Currently two LDAP directories are supported (LOCAL_LDAP and
+      FRAUNHOFER_FOKUS)
+    operationId: loginLdapUser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: abbreviation of your LDAP account
+                example: hello
+              password:
+                type: string
+                description: password of your LDAP account
+                example: world
+    parameters:
+      - name: serverName
+        in: path
+        description: >-
+          The server to be addressed and which are supported by the UEDB
+          (currently FRAUNHOFER_FOKUS and LOCAL_LDAP)
+        required: true
+        example: LOCAL_LDAP
+        schema:
+          type: string
+    responses:
+      "200":
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginResponse"
+      "400":
+        description: 'Bad credentials'
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "500":
+        description: "Internal server error"
+/core/authentication/ldap/discover:
+  get:
+    tags:
+      - pblc
+    parameters: []
+    summary: Gets the servernames of the LDAP directories registered in the UEDB
+    description: Asks the uedb of the servernames of the LDAP directories
+    responses:
+      "200":
+        description: Getting the names of the LDAP directories registered in the UEDB
+        content:
+          application/json:
+            schema:
+              description: An array of the names of the directories
+              type: array
+              items:
+                description: name of the LDAP directory
+                type: string
+              example:
+                - LOCAL_LDAP
+                - FRAUNHOFER_LDAP
+      "401":
+        description: "API-Token/JWT unauthorized"
+      "403":
+        description: "API-Token/JWT not sufficient permissions"
+      "500":
+        description: "Internal server error"
+  # '/lti13-consumer/{id}':
+  #   get:
+  #     summary: Get your LTI13 Credentials.
+  #     tags:
+  #       - pblc
+  #     parameters:
+  #       - in: path
+  #         name: id
+  #         description: ID of your generated credentials in POST /lti13-consumer.
+  #         example: abcd-efgh-ijkl
+  #         required: true
+  #     responses:
+  #       '200':
+  #         description: Succesfull operation. Credentials returned.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/LTI13ConsumerCredentials'
+  #   delete:
+  #     summary: Delete LTI13 Credentials.
+  #     tags:
+  #       - pblc
+  #     parameters:
+  #       - in: path
+  #         name: id
+  #         description: ID of your generated credentials in POST /lti13-consumer.
+  #         example: abcd-efgh-ijkl
+  #         required: true
+  #     responses:
+  #       '200':
+  #         description: Succesfull operation. Credentials got deleted.
+  # /lti13-consumer:
+  # post:
+  #   summary: Create LTI13 Credentials.
+  #   tags:
+  #     - pblc
+  #   parameters:
+  #     - in: body
+  #       name: issuer
+  #       description: Requesting issuer
+  #       example: clm
+  #       required: true
+  #     - in: body
+  #       name: client_id
+  #       description: client_id
+  #       example: "00001"
+  #       required: true
+  #     - in: body
+  #       name: key_set_url
+  #       description: key_set_url
+  #       example: "https://clm.de/jwks"
+  #       required: true
+  #     - in: body
+  #       name: auth_token_url
+  #       description: auth_token_url
+  #       example: "https://clm.de/jwks"
+  #       required: true
+  #   responses:
+  #     "200":
+  #       description: Succesfull operation. Credentials returned.
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: "#/components/schemas/LTI13ConsumerCredentials"
