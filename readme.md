@@ -45,7 +45,7 @@ Following table gives an overview of the settings you can change through the env
 
 4. Subsequently, the Swagger UI of the Open-API specification should be accessible at the following address. It is an aggregated Open-API of all the microservices. If a specific microservice needs to be tested, the mask must be adjusted to point to the respective host and port:
 
-http://localhost:PORT/api
+`http://localhost:PORT/api`
 
 **To access the API endpoints detailed in the Open-API specification, an API token is required. This token is generated during the initialization of the clm-core module. Please refer to the .env table**
 
