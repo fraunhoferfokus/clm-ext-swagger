@@ -86,13 +86,28 @@ const options: swaggerJsdoc.Options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'CLM-EXT-Tools API',
+            title: 'CLM-OPEN-CORE API',
             version: '1.0.0',
-            description: 'API endpoints the clm-ext-tools module offers',
+            description: 'API endpoints the CLM-OPEN-CORE microservices provide',
         },
         servers: [
             {
-                url: process.env.DEPLOY_URL || 'http://localhost:3000',
+                "url": "{scheme}://{hostname}:{port}{path}",
+                "description": "The production API server",
+                "variables": {
+                    "hostname": {
+                        "default": "localhost",
+                    },
+                    "port": {
+                        "default": `${process.env.PORT}`
+                    },
+                    "path": {
+                        "default": ""
+                    },
+                    "scheme": {
+                        "default": "http",
+                    }
+                }
             }
         ],
         security: [{
@@ -118,17 +133,22 @@ app.get('/swagger.json', async (req, res, next) => {
 app.use('/api', swaggerUi.serve, swaggerUi.setup(
     null, {
     explorer: true, swaggerOptions: {
-        url: process.env.DEPLOY_URL + '/swagger.json',
+        url: 'http://localhost:' + `${PORT}` + '/swagger.json',
     }
 }
 ));
 
 async function getRoutes() {
-    let paths = process.env.PATHS?.split(',')
-    if (!paths) paths = ['core', 'launch', 'tools', 'services', 'learningObjects', 'traceData', 'fit', 'adaptiveLearningPaths', 'objectMetadata']
-    for (const url of paths) {
+    for (const url of [
+        process.env.CORE_API,
+        process.env.SERVICE_PROVIDERS_API,
+        process.env.TOOLS_API,
+        process.env.LAUNCH_API,
+        process.env.TRACE_DATA_API,
+        process.env.LEARNING_OBJECTS_API
+    ]) {
         try {
-            const response = await axios.get(`${process.env.GATEWAY_URL || process.env.DEPLOY_URL}/${url}/swagger`)
+            const response = await axios.get(`${url}`)
             const data = response.data
             swaggerSpecification.paths = { ...swaggerSpecification?.paths, ...data.paths }
             swaggerSpecification.components.schemas = { ...swaggerSpecification?.components?.schemas, ...data.components.schemas }
@@ -143,7 +163,7 @@ async function getRoutes() {
 }
 
 app.listen(PORT, () => {
-    console.log('Swagger microservice builded')
+    console.log(`Swagger server is running on port ${PORT}`)
 })
 
 

@@ -6,6 +6,7 @@
   "description": "",
   "scripts": {
     "dev": "npx nodemon server.ts",
+    "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf ./dist && npx tsc",
     "build-commit": "npm run build && npm run git-push",
@@ -26,10 +27,10 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.5.0",
     "ts-node": "^10.7.0",
-    "typescript": "^4.6.4",
     "yaml-import": "^2.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.16",
+    "typescript": "^5.3.3"
   }
 }
