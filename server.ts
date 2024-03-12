@@ -82,7 +82,7 @@ import swaggerJsdoc from 'swagger-jsdoc'
  *       in: header
  *       name: x-refresh-token
  */
-const options: swaggerJsdoc.Options = {
+let options: swaggerJsdoc.Options = {
     definition: {
         openapi: '3.0.0',
         info: {
@@ -93,7 +93,7 @@ const options: swaggerJsdoc.Options = {
         servers: [
             {
                 "url": "{scheme}://{hostname}:{port}{path}",
-                "description": "The production API server",
+                "description": "Targeting the microservice itself",
                 "variables": {
                     "hostname": {
                         "default": "localhost",
@@ -108,7 +108,8 @@ const options: swaggerJsdoc.Options = {
                         "default": "http",
                     }
                 }
-            }
+            },
+
         ],
         security: [{
             bearerAuth: [],
@@ -118,6 +119,15 @@ const options: swaggerJsdoc.Options = {
         './src/controllers/*.ts'
     ]
 }
+
+if(process.env.GATEWAY_URL) {
+    options!.definition!.servers.unshift({
+        "url": process.env.GATEWAY_URL,
+        "description": "The production API server"
+    })
+}
+
+
 const swaggerSpecification: any = swaggerJsdoc(options)
 app.use(express.json())
 app.use(errHandler);
@@ -139,14 +149,16 @@ app.use('/api', swaggerUi.serve, swaggerUi.setup(
 ));
 
 async function getRoutes() {
-    for (const url of [
-        process.env.CORE_API,
-        process.env.SERVICE_PROVIDERS_API,
-        process.env.TOOLS_API,
-        process.env.LAUNCH_API,
-        process.env.TRACE_DATA_API,
-        process.env.LEARNING_OBJECTS_API
-    ]) {
+    let OPEN_API_ENDPOINTS
+    try {
+        console.log(process.env.OPEN_API_ENDPOINTS)
+        OPEN_API_ENDPOINTS = JSON.parse(process.env.OPEN_API_ENDPOINTS as string || '[]')
+    } catch (err) {
+        console.error(err)
+        console.error('Error while parsing OPEN_API_ENDPOINTS')
+    }
+
+    for (const url of OPEN_API_ENDPOINTS) {
         try {
             const response = await axios.get(`${url}`)
             const data = response.data
@@ -154,7 +166,6 @@ async function getRoutes() {
             swaggerSpecification.components.schemas = { ...swaggerSpecification?.components?.schemas, ...data.components.schemas }
             swaggerSpecification.components.securitySchemes = { ...swaggerSpecification?.components?.securitySchemes, ...data.components.securitySchemes }
             swaggerSpecification.components.parameters = { ...swaggerSpecification?.components?.parameters, ...data.components.parameters }
-
         } catch (err: any) {
             const code = err?.response?.status || 500
             console.error(`Error while fetching swagger.json from microservice '${url}' with status code ${code}`)

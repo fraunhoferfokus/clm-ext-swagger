@@ -4,8 +4,11 @@
 Serves as documentation to display all routes of either clm-extensions or the clm-core. Dynamically receives the swagger configuration of the deployed microservices.
 
 ## Requirements
-- MariaDB, set up locally.
-- Node.js 20.x
+- MariaDB, set up locally. This service leverages a database (DB) as the cornerstone for storing documents persistently. To establish a connection with MariaDB, it is essential that the database is secured through username and password authentication. Therefore, in order to run this service it is  required to create a database within the MariaDB and configure it with a username and password for access control
+  * MariaDB Installation: https://mariadb.com/kb/en/getting-installing-and-upgrading-mariadb/
+  * For setting up the password of a user: https://mariadb.com/kb/en/set-password/
+  
+- Node.js 20.x: https://nodejs.org/en/download
 ### Folder Structure
 root
 
@@ -22,28 +25,22 @@ root
 
 The Entity Relationship Model of the Open Core is shown above.
 
-## Setup for testing the webserver 
-
-1. npm install
-2. Copy .env.default to .env and overwrite needed properties
+## Setup for Testing the Webserver
+1. The service's configuration can be customized by referring to the `.env` file. Within this file, the `MARIA_CONFIG` variable should be updated with the appropriate values to reflect the user's specific database settings. Refer to the `MARIA_CONFIG` variable in the table below to see which comma seperated value refers to which respective database setting.
+2. Copy .env.default to .env and overwrite needed properties.
 
 Following table gives an overview of the settings you can change through the environment variables
 
-| Name                    | Example                                         | Required (Yes/No) | Description                                                                            |
-| ----------------------- | ----------------------------------------------- | ----------------- | -------------------------------------------------------------------------------------- |
-| PORT                    | 3010                                            | Yes               | The port on which the service should be deployed.                                      |
-| `DEPLOY_URL`            | `HOST_PROTOCOL://HOST_ADDRESS:GATEWAY_PORT/api` | Yes               | The address where all microservices are to be orchestrated. A `/api` must be appended. |
-| `CORE_API`              |                                                 | Yes               | The URL where the core open specification is located.                                  |
-| `SERVICE_PROVIDERS_API` |                                                 | Yes               | The URL where the service providers' open specification is located.                    |
-| `TOOLS_API`             |                                                 | Yes               | The URL where the tools' open specification is located.                                |
-| `LAUNCH_API`            |                                                 | Yes               | The URL where the launch open specification is located.                                |
-| `TRACE_DATA_API`        |                                                 | Yes               | The URL where the trace data open specification is located.                            |
-| `LEARNING_OBJECTS_API`  |                                                 | Yes               | The URL where the learning objects' open specification is located.                     |
+| Name               | Example                                      | Required (Yes/No) | Description                                                                            |
+| ------------------ | -------------------------------------------- | ----------------- | -------------------------------------------------------------------------------------- |
+| PORT               | 3010                                         | Yes               | The port on which the service should be deployed.                                      |
+| `DEPLOY_URL`       | `HOST_PROTOCOL://HOST_ADDRESS:HOST_PORT/api` | No               | The address where all microservices are to be orchestrated. A `/api` must be appended. |
+| OPEN_API_ENDPOINTS | '[]'                                         | No                | An Array of Open APi Specifications which then will be merged to one big specification |
 
 3.1 `npm run dev` for development with nodemon
 3.2 `npm start` for deployment
 
-4. Subsequently, the Swagger UI of the Open-API specification should be accessible at the following address. It is an aggregated Open-API of all the microservices. If a specific microservice needs to be tested, the mask must be adjusted to point to the respective host and port:
+1. Subsequently, the Swagger UI of the Open-API specification should be accessible at the following address. It is an aggregated Open-API of all the microservices. If a specific microservice needs to be tested, the mask must be adjusted to point to the respective host and port:
 
 `http://localhost:PORT/api`
 
