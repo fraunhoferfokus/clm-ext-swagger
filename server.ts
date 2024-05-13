@@ -120,9 +120,9 @@ let options: swaggerJsdoc.Options = {
     ]
 }
 
-if(process.env.GATEWAY_URL) {
+if (process.env.DEPLOY_URL) {
     options!.definition!.servers.unshift({
-        "url": process.env.GATEWAY_URL,
+        "url": process.env.DEPLOY_URL,
         "description": "The production API server"
     })
 }
@@ -143,7 +143,9 @@ app.get('/swagger.json', async (req, res, next) => {
 app.use('/api', swaggerUi.serve, swaggerUi.setup(
     null, {
     explorer: true, swaggerOptions: {
-        url: 'http://localhost:' + `${PORT}` + '/swagger.json',
+        url:
+            process.env.DEPLOY_URL ? process.env.DEPLOY_URL + '/swagger.json' :
+                'http://localhost:' + `${PORT}` + '/swagger.json',
     }
 }
 ));
